@@ -34,8 +34,8 @@ public class PlaceOnPlane : MonoBehaviour
 
     void Awake()
     {
-        m_RaycastManager = GetComponent<ARRaycastManager>();
         aRPlaneManager = GetComponent<ARPlaneManager>();
+        m_RaycastManager = GetComponent<ARRaycastManager>();
         aRPointCloudManager = GetComponent<ARPointCloudManager>();
     }
 
@@ -68,21 +68,32 @@ public class PlaceOnPlane : MonoBehaviour
         if (!TryGetTouchPosition(out Vector2 touchPosition))
             return;
 
-        if (spawnedObject != null)
-        {
-            aRPlaneManager.enabled = false;
-            aRPointCloudManager.enabled = false;
-        }
+        //if (spawnedObject != null)
+        //{
+        //    aRPlaneManager.enabled = false;
+        //    aRPointCloudManager.enabled = false;
+        //    foreach (ARPlane plane in aRPlaneManager.trackables)
+        //    {
+        //        Destroy(plane.gameObject);
+        //    }
+        //}
         else if (m_RaycastManager.Raycast(touchPosition, s_Hits, TrackableType.PlaneWithinPolygon))
         {
-
-            // Raycast hits are sorted by distance, so the first one
-            // will be the closest hit.
             var hitPose = s_Hits[0].pose;
 
             if (spawnedObject == null)
             {
                 spawnedObject = Instantiate(m_PlacedPrefab, hitPose.position, hitPose.rotation);
+                aRPlaneManager.enabled = false;
+                aRPointCloudManager.enabled = false;
+                foreach (ARPlane plane in aRPlaneManager.trackables)
+                {
+                    Destroy(plane.gameObject);
+                }
+                foreach (ARPointCloud cloud in aRPointCloudManager.trackables)
+                {
+                    Destroy(cloud.gameObject);
+                }
             }
             //else
             //{
